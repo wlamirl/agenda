@@ -28,6 +28,9 @@ class Module {
                 'menuAtivo' => function($sm) {
                     return new View\Helper\MenuAtivo($sm->getServiceLocator()->get('Request'));
                 },
+                'message' => function($sm) {
+                    return new View\Helper\Message($sm->getServiceLocator()->get('ControllerPluginManager')->get('flashmessenger'));
+                },
             )
         );
     }
