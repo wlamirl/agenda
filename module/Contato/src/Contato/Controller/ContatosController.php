@@ -1,15 +1,34 @@
 <?php
 
+/**
+ * namespace de localizacao do nosso controller
+ */
+
 namespace Contato\Controller;
 
+// import ZendMvc
 use Zend\Mvc\Controller\AbstractActionController;
+// import ZendView
 use Zend\View\Model\ViewModel;
+// imort ModelContatoTable com alias
+use Contato\Model\ContatoTable as ModelContato;
 
 class ContatosController extends AbstractActionController {
 
+    protected $contatoTable;
+
     // GET /contatos
     public function indexAction() {
-        
+//        // localizar adapter do banco
+//        $adapter = $this->getServiceLocator()->get('AdapterDb');
+//
+//        // model ContatoTable instanciado
+//        $modelContato = new ModelContato($adapter); // alias para ContatoTable
+//        // enviar para view o array com key contatos e value com todos os contatos
+//        return new ViewModel(array('contatos' => $modelContato->fetchAll()));
+        // enviar para view o array com key contatos e value com todos os contatos
+//        return new ViewModel(array('contatos' => $this->getContatoTable()->fetchAll()));
+        return new ViewModel(['contatos' => $this->getContatoTable()->fetchAll()]);
     }
 
     // GET /contatos/novo
@@ -43,7 +62,8 @@ class ContatosController extends AbstractActionController {
                 $this->flashMessenger()->addErrorMessage("Erro ao criar contato");
 
                 // redirecionar para action novo no controllers contatos
-                return $this->redirect()->toRoute('contatos', array('action' => 'novo'));
+//                return $this->redirect()->toRoute('contatos', array('action' => 'novo'));
+                return $this->redirect()->toRoute('contatos', ['action' => 'novo']);
             }
         }
     }
@@ -66,14 +86,27 @@ class ContatosController extends AbstractActionController {
         // 1 - solicitar serviço para pegar o model responsável pelo find
         // 2 - solicitar form com dados desse contato encontrado
         // formulário com dados preenchidos
-        $form = array(
-            'nome' => 'Igor Rocha',
-            "telefone_principal" => "(085) 8585-8585",
-            "telefone_secundario" => "(085) 8585-8585",
-            "data_criacao" => "02/03/2013",
-            "data_atualizacao" => "02/03/2013",
-        );
+//        $form = array(
+//            'nome' => 'Igor Rocha',
+//            "telefone_principal" => "(085) 8585-8585",
+//            "telefone_secundario" => "(085) 8585-8585",
+//            "data_criacao" => "02/03/2013",
+//            "data_atualizacao" => "02/03/2013",
+//        );
+        // localizar adapter do banco
+//        $adapter = $this->getServiceLocator()->get('AdapterDb');
+//
+//        // model ContatoTable instanciado
+//        $modelContato = new ModelContato($adapter); // alias para ContatoTable
+        try {
+            $form = (array) $this->getContatoTable()->find($id);
+        } catch (Exception $exc) {
+            // adicionar mensagem
+            $this->flashMessenger()->addErrorMessage($exc->getMessage());
 
+            // redirecionar para action index
+            return $this->redirect()->toRoute('contatos');
+        }
         // dados eviados para detalhes.phtml
         return array('id' => $id, 'form' => $form);
     }
@@ -96,12 +129,25 @@ class ContatosController extends AbstractActionController {
         // 1 - solicitar serviço para pegar o model responsável pelo find
         // 2 - solicitar form com dados desse contato encontrado
         // formulário com dados preenchidos
-        $form = array(
-            'nome' => 'Igor Rocha',
-            "telefone_principal" => "(085) 8585-8585",
-            "telefone_secundario" => "(085) 8585-8585",
-        );
+//        $form = array(
+//            'nome' => 'Igor Rocha',
+//            "telefone_principal" => "(085) 8585-8585",
+//            "telefone_secundario" => "(085) 8585-8585",
+//        );
+        // localizar adapter do banco
+//        $adapter = $this->getServiceLocator()->get('AdapterDb');
+//
+//        // model ContatoTable instanciado
+//        $modelContato = new ModelContato($adapter); // alias para ContatoTable
+        try {
+            $form = (array) $this->getContatoTable()->find($id);
+        } catch (Exception $exc) {
+            // adicionar mensagem
+            $this->flashMessenger()->addErrorMessage($exc->getMessage());
 
+            // redirecionar para action index
+            return $this->redirect()->toRoute('contatos');
+        }
         // dados eviados para editar.phtml
         return array('id' => $id, 'form' => $form);
     }
@@ -156,6 +202,26 @@ class ContatosController extends AbstractActionController {
 
         // redirecionar para action index
         return $this->redirect()->toRoute('contatos');
+    }
+
+    /**
+     * Metodo privado para obter instacia do Model ContatoTable
+     *
+     * @return ContatoTable
+     */
+    private function getContatoTable() {
+        // localizar adapter do banco
+//        $tableGateway = $this->getServiceLocator()->get('ContatoTableGateway');
+//
+//        // return model ContatoTable
+//        return new ModelContato($tableGateway); // alias para ContatoTable
+//        return $this->getServiceLocator()->get('ModelContato');
+        if (!$this->contatoTable) {
+            $this->contatoTable = $this->getServiceLocator()->get('ModelContato');
+        }
+
+        // return vairavel de classe com service ModelContato
+        return $this->contatoTable;
     }
 
 }
