@@ -7,7 +7,7 @@
     <div class="panel-body">
         <dl class="dl-horizontal">
             <dt>Nome:</dt>
-            <dd><?php $this->filter($contato)->nomeCompleto(); ?></dd>
+            <dd><?php echo $this->filter($contato)->nomeCompleto(); ?></dd>
             <dt>Telefone Principal:</dt>
             <dd><?php echo $this->filter($contato)->telefonePrincipal(); ?></dd>
             <dt>Telefone Secundario:</dt>

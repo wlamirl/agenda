@@ -1,0 +1,22 @@
+<?php
+// 
+//return [
+//    'caches' => [
+//        'Cache\FileSystem' => [
+//            'adapter'   => 'filesystem',
+//            'options'   => [
+////                'cache_dir' => __DIR__ . '/../../data/cache/'
+//                'dirLevel' => 2,
+//                'cacheDir' => 'data/cache',
+//                'dirPermission' => 0755,
+//                'filePermission' => 0666,               
+//            ],
+//            'plugins' => [
+//                'exception_handler' => [
+//                    'throw_exceptions' => false,
+//                ],
+//                'Serializer'
+//            ],
+//        ],
+//    ],
+//];

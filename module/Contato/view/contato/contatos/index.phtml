@@ -23,7 +23,7 @@
     <form class="form-inline pull-right" role="form">
         <div class="form-group">
             <label class="sr-only" for="localizar">Buscar...</label>
-            <input type="search" name="search" value="<?php echo $this->search; ?>" class="form-control" id="localizar" placeholder="Bucar...">
+            <input type="search" name="search" value="<?php echo $this->search; ?>" class="form-control typeahead" id="localizar" placeholder="Bucar..." autocomplete="off">
         </div>
         <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button>
     </form>
@@ -54,7 +54,8 @@
                     <td class="text-center"><?php echo $this->filter($contato)->quantidadeTelefones(); ?></td>
                     <td><?php echo $this->escapeHtml($contato->created); ?></td>
                     <td>
-                        <a class="btn btn-xs btn-info" title="Visualizar" href="<?php echo $this->url('contatos', array("action" => "detalhes", "id" => $contato->id,)); ?>"><span class="glyphicon glyphicon-new-window"></span></a>
+                        <button class="btn btn-xs btn-info" data-toggle="modal" data-target="#modal-detalhes-contato" data-contato-url="<?php echo $this->url('contatos', array("action" => "detalhes", "id" => $contato->id)); ?>" title="Visualizar" >
+                            <span class="glyphicon glyphicon-new-window"></span></button>
                         <a class="btn btn-xs btn-warning" title="Editar" href="<?php echo $this->url('contatos', array("action" => "editar", "id" => $contato->id,)); ?>"><span class="glyphicon glyphicon-edit"></span></a>
                         <a class="btn btn-xs btn-danger" title="Deletar" href="<?php echo $this->url('contatos', array("action" => "deletar", "id" => $contato->id,)); ?>"><span class="glyphicon glyphicon-floppy-remove"></span></a>
                     </td>
@@ -76,25 +77,46 @@
             ['route' => 'contatos']
     );
     ?>
-</div>
-<?php $this->headScript()->captureStart(); ?>
-$(function(){
-// variável para conter a url deletar
-var url_deletar     = '<?php echo $this->url('contatos', array("action" => "deletar")); ?>' + '/';
+    <div class="modal fade" id="modal-detalhes-contato">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    Corpo Modal Detalhes Contato
+                </div>
+            </div>
+        </div>    
+    </div>
+    <?php $this->headScript()->captureStart(); ?>
+    $(function(){
+    // variável para conter a url deletar
+    var url_deletar     = '<?php echo $this->url('contatos', array("action" => "deletar")); ?>' + '/';
 
-// qualquer link que tiver a url deletar vai sofrer um evento quando for clicada
-$("a[href*='" + url_deletar + "']").click(function (event) {
-// variável contendo o id referente ao botão clicado
-var contato_id  = $(this).attr('href').split(url_deletar).pop();
-// variável contendo mensagem da janela
-var mensagem = "Deseja realmente apagar o contato de ID " + contato_id + "?";
-// variável com resposta da mensagem colocada na janela
-var confirmacao = confirm(mensagem);
+    // qualquer link que tiver a url deletar vai sofrer um evento quando for clicada
+    $("a[href*='" + url_deletar + "']").click(function (event) {
+    // variável contendo o id referente ao botão clicado
+    var contato_id  = $(this).attr('href').split(url_deletar).pop();
+    // variável contendo mensagem da janela
+    var mensagem = "Deseja realmente apagar o contato de ID " + contato_id + "?";
+    // variável com resposta da mensagem colocada na janela
+    var confirmacao = confirm(mensagem);
 
-// se a confirmação for false o fluxo é interrompido
-if (!confirmacao)
-// elimar o evendo do botão clicado
-event.preventDefault();
-});
-});
-<?php $this->headScript()->captureEnd(); ?>
+    // se a confirmação for false o fluxo é interrompido
+    if (!confirmacao)
+    // elimar o evendo do botão clicado
+    event.preventDefault();
+    });
+    });
+
+    $(function(){
+    $('#modal-detalhes-contato').on('show.bs.modal', function (event) {
+    var button = $(event.relatedTarget)             // Button that triggered the modal
+    var contato_url = button.data('contato-url')    // Extract info from data-* attributes
+
+    var modal = $(this)
+    modal.
+    find('.modal-body').        // localizar corpo modal
+    html('Carregando...').      // colocar html caso a requição demore
+    load(contato_url)           // inserir conteudo html AJAX
+    })
+    });    
+    <?php $this->headScript()->captureEnd(); ?>

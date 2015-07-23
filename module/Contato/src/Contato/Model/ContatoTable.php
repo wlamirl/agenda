@@ -8,7 +8,6 @@ namespace Contato\Model;
 // use Zend\Db\Adapter\Adapter,
 //Zend\Db\ResultSet\ResultSet,   
 use Zend\Db\TableGateway\TableGateway;
-
 // import for fetchPaginator
 use Zend\Db\Sql\Select,
     Zend\Db\ResultSet\HydratingResultSet,
@@ -163,6 +162,32 @@ class ContatoTable {
                         // quantidade de itens na página
                         ->setItemCountPerPage((int) $itensPagina)
                         ->setPageRange((int) $itensPaginacao);
+    }
+
+    /**
+     * Localizar contatos pelo nome
+     * 
+     * @param type $nome
+     * @return type Array
+     */
+    public function search($nome) {
+        // preparar objeto SQL
+        $adapter = $this->tableGateway->getAdapter();
+        $sql = new \Zend\Db\Sql\Sql($adapter);
+
+        // montagem do select com where, like e limit para tabela contatos
+        $select = (new Select('contatos'))->limit(8);
+        $select
+                ->columns(array('id', 'name'))
+                ->where
+                ->like('name', "%{$nome}%")
+        ;
+
+        // executar select
+        $statement = $sql->getSqlStringForSqlObject($select);
+        $results = $adapter->query($statement, $adapter::QUERY_MODE_EXECUTE);
+
+        return $results;
     }
 
 }
